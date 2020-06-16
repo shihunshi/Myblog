@@ -1,30 +1,30 @@
 language: node_js
 node_js: stable
 
-# S: Build Lifecycle
+cache:
+    directories:
+        - node_modules
+
+before_install:
+  - npm install -g hexo-cli
+
 install:
   - npm install
+  - npm install hexo-deployer-git --save
 
-
-#before_script:
- # - npm install -g gulp
+before_script:
+  - git config --global user.name "shihunshi" 
+  - git config --global user.email "soul2020@126.com"
 
 script:
-  - hexo g
+  - hexo clean
+  - hexo generate
 
 after_script:
-  - cd ./public
-  - git init
-  - git config user.name "shihunshi"
-  - git config user.email "soul2020@126.com"
-  - git add .
-  - git commit -m "Update docs"
-  - git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:master
-# E: Build LifeCycle
+  - sed -i "s/gh_token/${GH_TOKEN}/g" ./_config.yml
+  # token_name 为上一步中Travis环境变量中设置的name
+  - hexo deploy
 
 branches:
   only:
-    - blog-resource
-env:
- global:
-   - GH_REF: github.com/shihunshi/myblog.git
+    - source
