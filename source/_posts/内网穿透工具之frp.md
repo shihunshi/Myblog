@@ -41,8 +41,8 @@ remote_port = 6000
 ```
 开启运行
 ```
-./frpc -c ./frpc.ini           #前端开启，关闭就会失效
-nohup ./frpc -c ./frpc.ini &  #后台开启
+./frpc -c ./frpc.ini           #前台开启，关闭就会失效
+nohup ./frpc -c ./frpc.ini &   #后台开启
 ```
 外网ssh访问内网服务器
 `ssh x.x.x.x -p 6000`
