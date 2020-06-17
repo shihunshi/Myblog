@@ -107,4 +107,4 @@ search:
 deploy:
   type: git
   repo: git@github.com:shihunshi/myblog.git
-  branch: master
+  branch: gh-pages
