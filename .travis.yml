@@ -2,7 +2,7 @@
 language: node_js
 # 指定node_js版本
 node_js: 
-  - stable
+  - 12
 # 指定缓存模块，可选。缓存可加快编译速度。
 cache:
   directories:
