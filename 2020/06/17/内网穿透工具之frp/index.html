@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/myblog/images/header.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/myblog/images/header.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/myblog/images/header.jpg">
+
+<link rel="stylesheet" href="/myblog/css/main.css">
+
+
+<link rel="stylesheet" href="/myblog/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"shihunshi.github.io","root":"/myblog/","scheme":"Gemini","version":"8.0.0-rc.3","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":false,"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="简介frp 是一个可用于内网穿透的高性能的反向代理应用，支持 tcp, udp 协议，为 http 和 https 应用协议提供了额外的能力，且尝试性支持了点对点穿透。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内网穿透工具之frp">
+<meta property="og:url" content="https://shihunshi.github.io/myblog/2020/06/17/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%B7%A5%E5%85%B7%E4%B9%8Bfrp/index.html">
+<meta property="og:site_name" content="Hello word">
+<meta property="og:description" content="简介frp 是一个可用于内网穿透的高性能的反向代理应用，支持 tcp, udp 协议，为 http 和 https 应用协议提供了额外的能力，且尝试性支持了点对点穿透。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-06-17T05:10:42.000Z">
+<meta property="article:modified_time" content="2021-06-11T21:19:43.492Z">
+<meta property="article:author" content="shihunshi">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://shihunshi.github.io/myblog/2020/06/17/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%B7%A5%E5%85%B7%E4%B9%8Bfrp/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>内网穿透工具之frp | Hello word</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/myblog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hello word</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/myblog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/myblog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/myblog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/myblog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/myblog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://shihunshi.github.io/myblog/2020/06/17/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%B7%A5%E5%85%B7%E4%B9%8Bfrp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/myblog/images/header.jpg">
+      <meta itemprop="name" content="shihunshi">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hello word">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          内网穿透工具之frp
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-06-17 05:10:42" itemprop="dateCreated datePublished" datetime="2020-06-17T05:10:42+00:00">2020-06-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-11 21:19:43" itemprop="dateModified" datetime="2021-06-11T21:19:43+00:00">2021-06-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/myblog/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>frp 是一个可用于内网穿透的高性能的反向代理应用，支持 tcp, udp 协议，为 http 和 https 应用协议提供了额外的能力，且尝试性支持了点对点穿透。</p>
+<a id="more"></a>
+<p>官方介绍：frp 仍然处于开发阶段，未经充分测试与验证，不推荐用于生产环境。<br>frp官方中文文档 <a href="https://github.com/fatedier/frp/blob/master/README_zh.md" target="_blank" rel="noopener">https://github.com/fatedier/frp/blob/master/README_zh.md</a><br>根据对应的操作系统及架构，从 <a href="https://github.com/fatedier/frp/releases" target="_blank" rel="noopener">Release</a> 页面下载最新版本的程序。<br>将 frps 及 frps.ini 放到具有公网 IP 的机器上。<br>将 frpc 及 frpc.ini 放到处于内网环境的机器上。</p>
+<p>主要介绍两个作用，其余的可自行看官方文档。</p>
+<h2 id="通过-ssh-访问公司内网机器"><a href="#通过-ssh-访问公司内网机器" class="headerlink" title="通过 ssh 访问公司内网机器"></a>通过 ssh 访问公司内网机器</h2><p><strong>公网机器</strong>修改frps.ini文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">bind_port &#x3D; 7000</span><br></pre></td></tr></table></figure>
+<p>启动 frps：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;frps -c .&#x2F;frps.ini          #前台开启，关闭就会失效</span><br><span class="line">nohup .&#x2F;frps -c .&#x2F;frps.ini &amp;  #后台开启</span><br></pre></td></tr></table></figure>
+<p><strong>内网环境机器</strong>修改 frpc.ini 文件，假设 frps 所在服务器的公网 IP 为 x.x.x.x：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr &#x3D; x.x.x.x</span><br><span class="line">server_port &#x3D; 7000</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[ssh]</span><br><span class="line">type &#x3D; tcp</span><br><span class="line">local_ip &#x3D; 127.0.0.1</span><br><span class="line">local_port &#x3D; 22</span><br><span class="line">remote_port &#x3D; 6000</span><br></pre></td></tr></table></figure>
+<p>开启运行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;frpc -c .&#x2F;frpc.ini           #前台开启，关闭就会失效</span><br><span class="line">nohup .&#x2F;frpc -c .&#x2F;frpc.ini &amp;   #后台开启</span><br></pre></td></tr></table></figure>
+<p>外网ssh访问内网服务器<br><code>ssh x.x.x.x -p 6000</code></p>
+<h2 id="通过自定义域名访问部署于内网的-web-服务"><a href="#通过自定义域名访问部署于内网的-web-服务" class="headerlink" title="通过自定义域名访问部署于内网的 web 服务"></a>通过自定义域名访问部署于内网的 web 服务</h2><p>启动同上方式同上，配置为内容<br><strong>公网机器</strong>修改 frps.ini 文件，设置 http 访问端口为 8080：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">bind_port &#x3D; 7000</span><br><span class="line">vhost_http_port &#x3D; 8080</span><br></pre></td></tr></table></figure>
+<p><strong>内网环境机器</strong>修改 frpc.ini 文件，假设 frps 所在的服务器的 IP 为 x.x.x.x，local_port 为本地机器上 web 服务对应的端口, 绑定自定义域名 <a href="http://www.yourdomain.com" target="_blank" rel="noopener">www.yourdomain.com</a>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr &#x3D; x.x.x.x</span><br><span class="line">server_port &#x3D; 7000</span><br><span class="line">[web]</span><br><span class="line">type &#x3D; http</span><br><span class="line">local_port &#x3D; 80</span><br><span class="line">custom_domains &#x3D; www.yourdomain.com</span><br></pre></td></tr></table></figure>
+<p>将 <a href="http://www.yourdomain.com" target="_blank" rel="noopener">www.yourdomain.com</a> 的域名 A 记录解析到 IP x.x.x.x，如果服务器已经有对应的域名，也可以将 CNAME 记录解析到服务器原先的域名。<br>通过浏览器访问 <a href="http://www.yourdomain.com:8080" target="_blank" rel="noopener">http://www.yourdomain.com:8080</a> 即可访问到处于内网机器上的 web 服务。<br>也可以不用域名通过IP访问，主要在于更改端口，下面给出一些配置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr &#x3D; x.x.x.x</span><br><span class="line">server_port &#x3D; 7000</span><br><span class="line"></span><br><span class="line">[ssh]</span><br><span class="line">type &#x3D; tcp</span><br><span class="line">local_ip &#x3D; 127.0.0.1</span><br><span class="line">local_port &#x3D; 22</span><br><span class="line">remote_port &#x3D; 6000</span><br><span class="line"></span><br><span class="line">[web]</span><br><span class="line">type &#x3D; tcp</span><br><span class="line">local_ip &#x3D; 127.0.0.1</span><br><span class="line">local_port &#x3D; 80</span><br><span class="line">remote_port &#x3D; 8081</span><br><span class="line"></span><br><span class="line">[RDP]</span><br><span class="line">type &#x3D; tcp</span><br><span class="line">local_ip &#x3D; 192.168.1.30 #电脑在局域网中的内网 IP (如是本机，也可使用 127.0.0.1)</span><br><span class="line">local_port &#x3D; 3389</span><br><span class="line">remote_port &#x3D; 7001</span><br><span class="line"></span><br><span class="line">[DSM]</span><br><span class="line">type &#x3D; tcp</span><br><span class="line">local_ip &#x3D; 192.168.1.40 #在局域网中的内网 IP</span><br><span class="line">local_port &#x3D; 5000</span><br><span class="line">remote_port &#x3D; 7002</span><br><span class="line"></span><br><span class="line">frp+proxifier</span><br><span class="line">[socks_proxy]</span><br><span class="line">type &#x3D; tcp</span><br><span class="line">remote_port &#x3D; 9999</span><br><span class="line">plugin &#x3D; socks5</span><br><span class="line">ssh把远程服务器的流量，变成本地计算机的socks5代理</span><br><span class="line">ssh -f -N -D 127.0.0.1:1080 -oPort&#x3D;6000 test@192.168.2.1</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/myblog/2020/06/17/XXE-%E6%BC%8F%E6%B4%9E/" rel="prev" title="XXE 漏洞">
+      <i class="fa fa-chevron-left"></i> XXE 漏洞
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过-ssh-访问公司内网机器"><span class="nav-text">通过 ssh 访问公司内网机器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过自定义域名访问部署于内网的-web-服务"><span class="nav-text">通过自定义域名访问部署于内网的 web 服务</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="shihunshi"
+      src="/myblog/images/header.jpg">
+  <p class="site-author-name" itemprop="name">shihunshi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/myblog/archives/">
+        
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/myblog/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">shihunshi</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">7k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">7 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/myblog/lib/anime.min.js"></script>
+  <script src="/myblog/lib/velocity/velocity.min.js"></script>
+  <script src="/myblog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/myblog/js/utils.js"></script>
+
+<script src="/myblog/js/motion.js"></script>
+
+
+<script src="/myblog/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+  
+<script src="/myblog/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
